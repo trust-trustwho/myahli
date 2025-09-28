@@ -5,6 +5,5 @@
   "start_url": "/myahli/",
   "display": "standalone",
   "background_color": "#F7FEF7",
-  "theme_color": "#27AE60",
-  "lang": "id"
+  "theme_color": "#27AE60"
 }
