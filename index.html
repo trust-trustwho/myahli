@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyAhli - Jembatan Keahlian Lokal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:wght@500;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        // Light Mode Palette
+                        'light-background': '#F7FEF7',
+                        'light-text': '#1a202c',
+                        'light-card': '#FFFFFF',
+                        'light-accent-blue': '#2F80ED',
+                        'light-accent-green': '#27AE60',
+                        'light-accent-orange': '#F2994A',
+                        'light-secondary-text': '#718096',
+                        'light-accent-green-soft': '#E6F4EA',
+
+                        // Dark Mode Palette
+                        'dark-background': '#122B20',
+                        'dark-text': '#E2E8F0',
+                        'dark-card': '#2D3748',
+                        'dark-accent-blue': '#63B3ED',
+                        'dark-accent-green': '#68D391',
+                        'dark-accent-orange': '#F6AD55',
+                        'dark-secondary-text': '#A0AEC0',
+                        'dark-accent-green-soft': '#1A3B2A',
+                    },
+                    fontFamily: {
+                        'poppins': ['Lora', 'serif'], // Changed from Poppins to Lora
+                        'inter': ['Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                        'fade-out': 'fadeOut 0.5s ease-in forwards',
+                        'splash-fade': 'fadeIn 1.5s ease-in-out',
+                        'splash-fade-out': 'fadeOut 1.5s ease-in-out forwards',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            'from': { opacity: '0', transform: 'translateY(10px)' },
+                            'to': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        fadeOut: {
+                            'from': { opacity: '1' },
+                            'to': { opacity: '0', visibility: 'hidden' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Basic styles to prevent layout shifts and ensure consistency */
+        body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+        .screen { display: none; }
+        .screen.active { display: flex; animation: fadeIn 0.4s ease-out; }
+        
+        /* For horizontal scrollbar styling */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        main::-webkit-scrollbar { width: 4px; }
+        main::-webkit-scrollbar-track { background: transparent; }
+        main::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 2px; }
+        .dark main::-webkit-scrollbar-thumb { background: #4a5568; }
+
+        /* Aesthetic Enhancements */
+        .aesthetic-shadow { box-shadow: 0 4px 15px rgba(39, 174, 96, 0.1); }
+        .dark .aesthetic-shadow { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); }
+
+        .btn-primary {
+            background-image: linear-gradient(to right, #27AE60 0%, #2ECC71 51%, #27AE60 100%);
+            transition: 0.5s;
+            background-size: 200% auto;
+            color: white;
+            font-weight: bold;
+        }
+        .btn-primary:hover {
+            background-position: right center;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
+        }
+        .dark .btn-primary {
+            background-image: linear-gradient(to right, #68D391 0%, #83E0AA 51%, #68D391 100%);
+        }
+         .dark .btn-primary:hover {
+            box-shadow: 0 4px 15px rgba(104, 211, 145, 0.3);
+        }
+
+        .category-item:hover .category-icon {
+            transform: scale(1.1);
+        }
+        .category-icon {
+            transition: transform 0.3s ease;
+        }
+        
+        .category-item.active-category .category-icon {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(39, 174, 96, 0.2);
+            border: 2px solid #A7D7B9;
+        }
+        .dark .category-item.active-category .category-icon {
+             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+             border: 2px solid #4A934A;
+        }
+
+        .provider-card {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .gradient-border {
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            border-radius: 9999px;
+            background-image: linear-gradient(#E6F4EA, #E6F4EA), linear-gradient(45deg, #A7D7B9, #C8E6C9);
+        }
+        .dark .gradient-border {
+             background-image: linear-gradient(#1A3B2A, #1A3B2A), linear-gradient(45deg, #4A934A, #68D391);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 50;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            backdrop-filter: blur(4px);
+            animation: fadeIn 0.3s ease-out;
+        }
+        .modal-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;
+            border-top-left-radius: 1.5rem;
+            border-top-right-radius: 1.5rem;
+            width: 100%;
+            max-width: 28rem; /* Corresponds to max-w-md */
+            animation: slideUp 0.4s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="font-inter bg-light-background dark:bg-dark-background text-light-text dark:text-dark-text transition-colors duration-300">
+
+    <div id="app-container" class="max-w-md mx-auto h-screen overflow-hidden border-x border-gray-200 dark:border-gray-700 flex flex-col">
+
+        <!-- ===== SPLASH SCREEN ===== -->
+        <div id="splash-screen" class="screen active flex-col justify-center items-center h-full animate-splash-fade">
+            <div class="font-poppins text-4xl tracking-wider text-light-text dark:text-dark-text">
+                <span class="font-medium">MY</span><span class="font-bold">AHLI</span>
+            </div>
+        </div>
+
+        <!-- ===== LOGIN & SIGN UP SCREEN ===== -->
+        <div id="login-screen" class="screen flex-col h-full p-8 justify-center items-center text-center">
+            <div class="font-poppins text-3xl tracking-wider mb-8 text-light-text dark:text-dark-text">
+                 <span class="font-medium">MY</span><span class="font-bold">AHLI</span>
+            </div>
+            <h1 class="font-poppins text-2xl font-bold mb-2">Selamat Datang!</h1>
+            <p class="text-light-secondary-text dark:text-dark-secondary-text mb-8">Login untuk melanjutkan</p>
+            
+            <button class="w-full bg-white dark:bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-lg flex items-center justify-center border border-gray-300 dark:border-gray-600 mb-4 hover:bg-gray-50 dark:hover:bg-gray-300 transition-colors">
+                <svg class="w-6 h-6 mr-3" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.42-4.55H24v8.51h13.07c-.59 3.09-2.29 5.79-4.92 7.58l7.49 5.81C44.49 38.33 46.98 32.07 46.98 24.55z"></path><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.49-5.81c-2.16 1.45-4.92 2.3-8.4 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path><path fill="none" d="M0 0h48v48H0z"></path></svg>
+                Lanjutkan dengan Google
+            </button>
+            
+            <div class="my-4 flex items-center w-full">
+                <div class="flex-grow border-t border-gray-200 dark:border-gray-700"></div>
+                <span class="mx-4 text-xs text-light-secondary-text dark:text-dark-secondary-text">ATAU</span>
+                <div class="flex-grow border-t border-gray-200 dark:border-gray-700"></div>
+            </div>
+
+            <input type="email" placeholder="Email" class="w-full bg-light-card dark:bg-dark-card py-3 px-4 rounded-lg mb-3 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-light-accent-green dark:focus:ring-dark-accent-green transition-shadow">
+            <input type="password" placeholder="Password" class="w-full bg-light-card dark:bg-dark-card py-3 px-4 rounded-lg mb-4 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-light-accent-green dark:focus:ring-dark-accent-green transition-shadow">
+            
+            <button onclick="navigateTo('home-screen', {userName: 'Pengguna'})" class="w-full btn-primary py-3 px-4 rounded-lg mb-4 transition-transform duration-300 ease-in-out">Login</button>
+            <p class="text-sm">Belum punya akun? <a href="#" class="font-bold text-light-accent-green dark:text-dark-accent-green hover:underline">Daftar</a></p>
+
+            <button onclick="navigateTo('home-screen', {userName: 'Tamu'})" class="mt-8 text-sm text-light-secondary-text dark:text-dark-secondary-text hover:underline">Lanjut sebagai Tamu</button>
+        </div>
+        
+        <!-- App Content Shell (Header + Main Content) -->
+        <div id="app-content-shell" class="hidden relative flex-col h-full w-full">
+            <header class="p-4 flex justify-between items-center border-b border-gray-200 dark:border-gray-700/50 bg-light-background/80 dark:bg-dark-background/80 backdrop-blur-sm z-10 flex-shrink-0 shadow-sm">
+                <div id="header-left"></div>
+                <div class="flex items-center space-x-4">
+                    <i id="chat-list-icon" data-lucide="message-square" class="cursor-pointer text-light-text dark:text-dark-text" onclick="navigateTo('chat-list-screen')"></i>
+                    <i id="notification-icon" data-lucide="bell" class="cursor-pointer text-light-text dark:text-dark-text" onclick="navigateTo('notification-screen')"></i>
+                    <button id="theme-toggle-btn" class="cursor-pointer text-light-text dark:text-dark-text">
+                        <i data-lucide="sun"></i>
+                    </button>
+                </div>
+            </header>
+
+            <main class="flex-grow overflow-y-auto">
+                <div id="home-screen" class="screen flex-col p-4">
+                    <div class="mb-4">
+                        <div class="relative">
+                           <input type="text" id="search-bar" placeholder="Cari layanan di..." class="w-full bg-light-card dark:bg-dark-card py-3 pl-10 pr-4 rounded-full border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-light-accent-green dark:focus:ring-dark-accent-green aesthetic-shadow transition-shadow">
+                           <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-light-secondary-text dark:text-dark-secondary-text"></i>
+                       </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h2 id="category-title" class="font-poppins font-bold text-lg mb-2">Kategori</h2>
+                        <div id="category-list" class="flex space-x-3 overflow-x-auto pb-2 no-scrollbar"></div>
+                    </div>
+
+                    <div>
+                        <h2 class="font-poppins font-bold text-lg mb-2">Ahli di Sekitarmu</h2>
+                        <div id="loading-spinner" class="hidden text-center p-8">
+                             <div role="status">
+                                <svg aria-hidden="true" class="inline w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-light-accent-green" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+                                    <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0492C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+                                </svg>
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                        </div>
+                        <div id="provider-list" class="grid grid-cols-2 gap-4"></div>
+                        <div id="empty-state" class="hidden text-center p-8 col-span-2">
+                            <i data-lucide="user-x" class="mx-auto w-16 h-16 text-light-secondary-text dark:text-dark-secondary-text mb-4"></i>
+                            <p class="text-light-secondary-text dark:text-dark-secondary-text">Belum ada Ahli di kota ini.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="profile-detail-screen" class="screen flex-col">
+                    <div id="profile-detail-content" class="p-6 flex-grow overflow-y-auto"></div>
+                    <div class="p-4 mt-auto border-t border-gray-200 dark:border-gray-700/50 bg-light-background/80 dark:bg-dark-background/80 backdrop-blur-sm sticky bottom-0">
+                         <button id="chat-button" class="w-full btn-primary py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-transform duration-300 ease-in-out">
+                            <i data-lucide="message-square"></i>
+                            Chat Ahli
+                        </button>
+                    </div>
+                </div>
+
+                <div id="profile-edit-screen" class="screen flex-col p-4">
+                    <form id="profile-edit-form" class="overflow-y-auto"></form>
+                </div>
+
+                <div id="notification-screen" class="screen flex-col">
+                    <div id="notification-list" class="divide-y divide-gray-200 dark:divide-gray-700/50"></div>
+                </div>
+
+                <div id="chat-list-screen" class="screen flex-col">
+                    <div id="chat-list-content" class="divide-y divide-gray-200 dark:divide-gray-700/50"></div>
+                </div>
+
+                <div id="chat-detail-screen" class="screen flex-col h-full">
+                    <div id="chat-detail-messages" class="flex-grow p-4 space-y-4 overflow-y-auto"></div>
+                    <div class="p-2 border-t border-gray-200 dark:border-gray-700/50 bg-light-background dark:bg-dark-card flex-shrink-0">
+                        <div class="flex items-center gap-2">
+                            <input type="text" id="chat-input" placeholder="Ketik pesan..." class="w-full bg-light-card dark:bg-dark-background py-2 px-4 rounded-full border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-1 focus:ring-light-accent-green dark:focus:ring-dark-accent-green">
+                            <button id="send-chat-button" class="btn-primary rounded-full p-2">
+                                <i data-lucide="send" class="w-5 h-5 text-white"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Floating Action Button for Profile Creation -->
+            <button id="create-profile-fab" onclick="navigateTo('profile-edit-screen')" class="hidden absolute bottom-6 right-6 btn-primary rounded-full p-4 shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out z-20 transform hover:scale-110">
+                <i data-lucide="user-plus" class="w-6 h-6 text-white"></i>
+            </button>
+        </div>
+
+        <!-- City Selection Modal -->
+        <div id="city-modal" class="modal justify-center items-end">
+             <div id="modal-overlay" class="absolute top-0 left-0 w-full h-full"></div>
+             <div class="modal-content bg-light-card dark:bg-dark-card p-4 shadow-lg">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="font-poppins font-bold text-lg">Pilih Kota</h2>
+                    <button id="close-modal-btn" class="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                <div id="city-list-modal" class="space-y-2">
+                    <!-- City items will be injected here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+// ===== STATE MANAGEMENT & MOCK DATA =====
+const state = { currentScreen: 'splash-screen', navigationHistory: [], userName: 'Pengguna', currentUserId: 'user_01', selectedCity: 'Surabaya', activeCategory: null, searchTerm: '' };
+const mockData = { 
+    cities: ['Surabaya', 'Jakarta', 'Bandung', 'Medan', 'Semarang', 'Makassar', 'Yogyakarta'],
+    categories: [
+        { id: 0, name: 'Semua', icon: 'layout-grid' },
+        { id: 1, name: 'Reparasi AC', icon: 'air-vent' },
+        { id: 2, name: 'Tukang Ledeng', icon: 'wrench' },
+        { id: 3, name: 'Listrik', icon: 'zap' },
+        { id: 4, name: 'Desain Grafis', icon: 'palette' },
+        { id: 5, name: 'Fotografi', icon: 'camera' },
+        { id: 6, name: 'Catering', icon: 'chef-hat' },
+        { id: 7, name: 'Guru Les', icon: 'book-user' }
+    ], 
+    providers: [
+        { provider_id: 1, full_name: 'Budi Santoso', profile_picture_url: 'https://placehold.co/100x100/27AE60/FFFFFF?text=BS', primary_skill: 'Spesialis AC', categoryName: 'Reparasi AC', city: 'Surabaya', price_rate_type: 'Per Proyek', price_amount: 150000, whatsapp_number: '6281234567890', bio: 'Pengalaman lebih dari 10 tahun dalam perbaikan dan instalasi AC berbagai merek. Cepat, rapi, dan bergaransi.', portfolio_urls: ['https://placehold.co/400x300/cccccc/333333?text=Portfolio+1', 'https://placehold.co/400x300/cccccc/333333?text=Portfolio+2'], avg_rating: 4.8, distance: '2.5 km', skills: ['Perbaikan AC Bocor', 'Isi Freon', 'Instalasi AC Baru', 'Servis Rutin'], reviews: [{ client_name: 'Andi', client_avatar_url: 'https://placehold.co/50x50/E0E0E0/333?text=A', rating: 5, comment: 'Pengerjaan sangat cepat dan rapi. AC saya langsung dingin lagi. Recommended!' },{ client_name: 'Sari', client_avatar_url: 'https://placehold.co/50x50/E0E0E0/333?text=S', rating: 4, comment: 'Cukup memuaskan, teknisinya ramah.' }] },
+        { provider_id: 2, full_name: 'Citra Lestari', profile_picture_url: 'https://placehold.co/100x100/F2994A/FFFFFF?text=CL', primary_skill: 'Desain Grafis', categoryName: 'Desain Grafis', city: 'Surabaya', price_rate_type: 'Per Jam', price_amount: 75000, whatsapp_number: '6281234567891', bio: 'Lulusan DKV dengan spesialisasi branding dan logo. Siap membantu bisnis Anda tampil profesional.', portfolio_urls: ['https://placehold.co/400x300/cccccc/333333?text=Logo+A', 'https://placehold.co/400x300/cccccc/333333?text=Brosur+B'], avg_rating: 4.9, distance: '5.1 km', skills: ['Desain Logo & Branding', 'Desain Media Sosial', 'Ilustrasi', 'UI/UX Design'], reviews: [{ client_name: 'Toko Roti Enak', client_avatar_url: 'https://placehold.co/50x50/E0E0E0/333?text=TR', rating: 5, comment: 'Desain logonya luar biasa! Sangat sesuai dengan brief dan bisnis kami jadi terlihat lebih profesional.' },{ client_name: 'Budi Gaming', client_avatar_url: 'https://placehold.co/50x50/E0E0E0/333?text=BG', rating: 5, comment: 'Illustrasinya keren banget buat channel saya. Prosesnya cepat dan komunikatif.' }] },
+        { provider_id: 3, full_name: 'Eko Wijoyo', profile_picture_url: 'https://placehold.co/100x100/2F80ED/FFFFFF?text=EW', primary_skill: 'Tukang Ledeng', categoryName: 'Tukang Ledeng', city: 'Jakarta', price_rate_type: 'Per Proyek', price_amount: 200000, whatsapp_number: '6281234567892', bio: 'Mengatasi segala masalah pipa bocor, wastafel mampet, dan instalasi keran. Respon cepat 24 jam.', portfolio_urls: [], avg_rating: 4.7, distance: '1.8 km', skills: ['Perbaikan Pipa Bocor', 'Anti Mampet', 'Instalasi Keran & Shower'], reviews: [{ client_name: 'Ibu Wati', client_avatar_url: 'https://placehold.co/50x50/E0E0E0/333?text=IW', rating: 5, comment: 'Sangat membantu, tengah malam ada masalah langsung datang dan selesai.' }] },
+        { provider_id: 4, full_name: 'Dewi Anjani', profile_picture_url: 'https://placehold.co/100x100/9B51E0/FFFFFF?text=DA', primary_skill: 'Fotografer Pernikahan', categoryName: 'Fotografi', city: 'Bandung', price_rate_type: 'Per Proyek', price_amount: 2500000, whatsapp_number: '6281234567893', bio: 'Momen spesial Anda akan saya abadikan dengan indah dan penuh cerita. Pengalaman lebih dari 5 tahun di bidang fotografi wedding.', portfolio_urls: ['https://placehold.co/400x300/cccccc/333333?text=Wedding+A', 'https://placehold.co/400x300/cccccc/333333?text=Wedding+B'], avg_rating: 5.0, distance: '8.3 km', skills: ['Fotografi Wedding', 'Fotografi Pre-wedding', 'Video Cinematic', 'Drone Videography'], reviews: [] },
+        { provider_id: 5, full_name: 'Agus Purnomo', profile_picture_url: 'https://placehold.co/100x100/EB5757/FFFFFF?text=AP', primary_skill: 'Instalasi Listrik', categoryName: 'Listrik', city: 'Surabaya', price_rate_type: 'Per Proyek', price_amount: 300000, whatsapp_number: '6281234567894', bio: 'Instalasi listrik baru, perbaikan korsleting, dan pemasangan lampu. Amanah dan sesuai standar.', portfolio_urls: [], avg_rating: 4.6, distance: '3.0 km', skills: ['Instalasi Listrik Rumah', 'Perbaikan Korsleting', 'Tambah Titik Lampu'], reviews: [] },
+        { provider_id: 6, full_name: 'Rina Hartono', profile_picture_url: 'https://placehold.co/100x100/16A085/FFFFFF?text=RH', primary_skill: 'Guru Les Matematika', categoryName: 'Guru Les', city: 'Surabaya', price_rate_type: 'Per Sesi', price_amount: 100000, whatsapp_number: '6281234567895', bio: 'Mahasiswa tingkat akhir jurusan Matematika, siap membantu putra-putri Anda memahami pelajaran dengan cara yang menyenangkan.', portfolio_urls: [], avg_rating: 4.9, distance: '4.2 km', skills: ['Matematika SD', 'Matematika SMP', 'Persiapan Ujian Nasional'], reviews: [{ client_name: 'Mama Budi', client_avatar_url: 'https://placehold.co/50x50/E0E0E0/333?text=MB', rating: 5, comment: 'Anak saya jadi suka matematika sekarang. Kak Rina sabar sekali mengajarnya.' }] }
+    ], 
+    notifications: [
+        { notification_id: 1, user_id: 1, type: 'chat', content: 'Citra Lestari mengirimi Anda pesan baru.', is_read: false, link_target: 'chat-detail-screen:3', created_at: '5 menit lalu' },
+        { notification_id: 2, user_id: 1, type: 'hire', content: 'Andi baru saja menyewa jasa Anda untuk perbaikan AC.', is_read: false, link_target: '#', created_at: '1 jam lalu' },
+        { notification_id: 3, user_id: 1, type: 'review', content: 'Sari menambahkan ulasan baru di profil Anda.', is_read: false, link_target: 'profile-detail-screen:1', created_at: '3 jam lalu' },
+        { notification_id: 4, user_id: 1, type: 'rating', content: 'Budi memberikan rating 5 bintang untuk layanan Anda.', is_read: true, link_target: 'profile-detail-screen:1', created_at: '1 hari lalu' },
+        { notification_id: 5, user_id: 1, type: 'promo', content: 'Diskon 20% untuk semua layanan perbaikan AC!', is_read: true, link_target: '#', created_at: '2 hari lalu' }
+    ],
+    conversations: [
+        { conversation_id: 1, participant_ids: ['user_01', 1], last_message_timestamp: new Date('2024-05-20T10:30:00') },
+        { conversation_id: 2, participant_ids: ['user_01', 3], last_message_timestamp: new Date('2024-05-19T15:00:00') },
+        { conversation_id: 3, participant_ids: ['user_01', 2], last_message_timestamp: new Date() }
+    ],
+    messages: [
+        { message_id: 1, conversation_id: 1, sender_id: 'user_01', text: 'Halo Pak Budi, saya mau tanya soal servis AC.', timestamp: new Date('2024-05-20T10:29:00') },
+        { message_id: 2, conversation_id: 1, sender_id: 1, text: 'Halo, iya silakan. Ada yang bisa dibantu?', timestamp: new Date('2024-05-20T10:30:00') },
+        { message_id: 3, conversation_id: 2, sender_id: 3, text: 'Selamat siang, ada yang bisa saya bantu?', timestamp: new Date('2024-05-19T15:00:00') }
+    ]
+};
+
+// ===== UI RENDERERS =====
+
+function renderStarRating(rating, centered = false) {
+    let stars = '';
+    const fullStars = Math.floor(rating);
+    const halfStar = rating % 1 !== 0;
+    const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+    for(let i=0; i<fullStars; i++) stars += `<i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-current"></i>`;
+    if(halfStar) stars += `<i data-lucide="star-half" class="w-4 h-4 text-yellow-400 fill-current"></i>`;
+    for(let i=0; i<emptyStars; i++) stars += `<i data-lucide="star" class="w-4 h-4 text-gray-300 dark:text-gray-600"></i>`;
+    return `<div class="flex items-center ${centered ? 'justify-center' : ''} gap-1">${stars} <span class="text-sm text-light-secondary-text dark:text-dark-secondary-text ml-1 font-medium">${rating.toFixed(1)}</span></div>`;
+}
+
+function renderCategories() {
+    const container = document.getElementById('category-list');
+    container.innerHTML = mockData.categories.map(cat => `
+        <div class="flex-shrink-0 text-center cursor-pointer p-2 rounded-lg category-item" data-category="${cat.name}">
+            <div class="category-icon bg-light-accent-green-soft dark:bg-dark-accent-green-soft w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-2 aesthetic-shadow">
+                <i data-lucide="${cat.icon}" class="w-8 h-8 text-light-accent-green dark:text-dark-accent-green"></i>
+            </div>
+            <p class="text-xs font-medium">${cat.name}</p>
+        </div>
+    `).join('');
+}
+
+function renderProviders(providersToRender) {
+    const container = document.getElementById('provider-list');
+    const emptyState = document.getElementById('empty-state');
+    
+    container.innerHTML = '';
+
+    if (providersToRender.length === 0) {
+        emptyState.style.display = 'block';
+        emptyState.querySelector('p').textContent = state.activeCategory || state.searchTerm ? 'Tidak ada hasil yang cocok.' : 'Belum ada Ahli di kota ini.';
+    } else {
+        emptyState.style.display = 'none';
+        container.innerHTML = providersToRender.map(p => `
+            <div class="provider-card bg-light-accent-green-soft dark:bg-dark-accent-green-soft rounded-2xl p-4 flex flex-col text-center cursor-pointer aesthetic-shadow" onclick="navigateTo('profile-detail-screen', { providerId: ${p.provider_id} })">
+                <div class="gradient-border flex-shrink-0 mx-auto mb-3">
+                    <img src="${p.profile_picture_url}" alt="${p.full_name}" class="w-16 h-16 rounded-full object-cover border-2 border-transparent">
+                </div>
+                <div class="flex-grow flex flex-col justify-center">
+                    <h3 class="font-poppins font-bold text-sm truncate">${p.full_name}</h3>
+                    <p class="text-xs text-light-accent-blue dark:text-dark-accent-blue font-semibold mb-2">${p.primary_skill}</p>
+                    ${renderStarRating(p.avg_rating, true)}
+                </div>
+                <div class="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700/50 text-sm">
+                     <p class="font-bold text-light-accent-green dark:text-dark-accent-green">Rp ${p.price_amount.toLocaleString('id-ID')}</p>
+                     <p class="text-xs text-light-secondary-text dark:text-dark-secondary-text">${p.price_rate_type}</p>
+                </div>
+            </div>
+        `).join('');
+        const cards = container.querySelectorAll('.provider-card');
+        cards.forEach((card, index) => {
+            card.style.animationDelay = `${index * 100}ms`;
+        });
+    }
+    lucide.createIcons();
+}
+
+function filterAndRenderProviders() {
+    const container = document.getElementById('provider-list');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const emptyState = document.getElementById('empty-state');
+    
+    loadingSpinner.style.display = 'block';
+    container.innerHTML = '';
+    emptyState.style.display = 'none';
+
+    setTimeout(() => {
+        const { selectedCity, activeCategory, searchTerm } = state;
+        let filtered = mockData.providers.filter(p => p.city === selectedCity);
+
+        if (activeCategory) {
+            filtered = filtered.filter(p => p.categoryName === activeCategory);
+        }
+
+        if (searchTerm) {
+            const lowercasedTerm = searchTerm.toLowerCase();
+            filtered = filtered.filter(p =>
+                p.full_name.toLowerCase().includes(lowercasedTerm) ||
+                p.primary_skill.toLowerCase().includes(lowercasedTerm)
+            );
+        }
+        
+        loadingSpinner.style.display = 'none';
+        renderProviders(filtered);
+    }, 300); // Simulate network delay
+}
+
+
+function renderProfileDetail(providerId) {
+    const provider = mockData.providers.find(p => p.provider_id === providerId);
+    if (!provider) return;
+    const container = document.getElementById('profile-detail-content');
+    container.innerHTML = `
+        <div class="text-center">
+            <div class="gradient-border inline-block">
+                <img src="${provider.profile_picture_url}" alt="${provider.full_name}" class="w-24 h-24 rounded-full object-cover mx-auto border-4 border-transparent">
+            </div>
+            <h2 class="font-poppins font-bold text-2xl mt-4">${provider.full_name}</h2>
+            <p class="text-lg text-light-accent-blue dark:text-dark-accent-blue font-semibold mb-2">${provider.primary_skill}</p>
+            ${renderStarRating(provider.avg_rating, true)}
+             <div class="mt-4 bg-light-background dark:bg-dark-card/50 p-3 rounded-xl text-center">
+                <p class="text-xs text-light-secondary-text dark:text-dark-secondary-text">Mulai dari</p>
+                <p class="font-bold text-2xl text-light-accent-green dark:text-dark-accent-green">Rp ${provider.price_amount.toLocaleString('id-ID')}</p>
+                <p class="text-xs text-light-secondary-text dark:text-dark-secondary-text">${provider.price_rate_type}</p>
+            </div>
+        </div>
+        <div class="mt-6">
+            <h3 class="font-poppins font-bold text-lg mb-2">Tentang Saya</h3>
+            <p class="text-light-secondary-text dark:text-dark-secondary-text leading-relaxed">${provider.bio}</p>
+        </div>
+
+        ${provider.skills && provider.skills.length > 0 ? `
+        <div class="mt-6">
+            <h3 class="font-poppins font-bold text-lg mb-2">Keahlian</h3>
+            <div class="flex flex-wrap gap-2">
+                ${provider.skills.map(skill => `<span class="bg-gray-100 dark:bg-gray-700 text-sm font-medium px-3 py-1 rounded-full">${skill}</span>`).join('')}
+            </div>
+        </div>` : ''}
+
+        ${provider.portfolio_urls.length > 0 ? `
+        <div class="mt-6">
+            <h3 class="font-poppins font-bold text-lg mb-2">Portfolio</h3>
+            <div class="grid grid-cols-2 gap-3">
+                ${provider.portfolio_urls.map(url => `<img src="${url}" class="rounded-lg w-full h-auto object-cover aesthetic-shadow">`).join('')}
+            </div>
+        </div>` : ''}
+
+        ${provider.reviews && provider.reviews.length > 0 ? `
+        <div class="mt-6">
+            <h3 class="font-poppins font-bold text-lg mb-2">Ulasan Klien (${provider.reviews.length})</h3>
+            <div class="space-y-4">
+                ${provider.reviews.map(review => `
+                    <div class="bg-light-background dark:bg-dark-card/50 p-4 rounded-xl">
+                        <div class="flex items-start gap-3">
+                            <img src="${review.client_avatar_url}" alt="${review.client_name}" class="w-10 h-10 rounded-full object-cover">
+                            <div class="flex-grow">
+                                <div class="flex justify-between items-center">
+                                    <h4 class="font-poppins font-bold">${review.client_name}</h4>
+                                    <div class="flex items-center gap-1">
+                                        <span class="text-sm font-bold">${review.rating}</span>
+                                        <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-current"></i>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-light-secondary-text dark:text-dark-secondary-text mt-1">${review.comment}</p>
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>` : ''}
+    `;
+    document.getElementById('chat-button').onclick = () => startOrOpenChat(provider.provider_id);
+    lucide.createIcons();
+}
+
+function renderNotifications() {
+    const container = document.getElementById('notification-list');
+    const iconMap = {
+        promo: 'tag',
+        update: 'user-cog',
+        rating: 'star',
+        review: 'star',
+        hire: 'briefcase',
+        chat: 'message-square',
+        default: 'bell'
+    };
+
+    container.innerHTML = mockData.notifications.map(n => `
+        <div class="p-4 flex items-start gap-4 cursor-pointer ${n.is_read ? 'opacity-60' : ''} hover:bg-gray-50 dark:hover:bg-gray-700/50" onclick="handleNotificationClick(${n.notification_id})">
+            <div class="p-2 bg-light-accent-green-soft dark:bg-dark-accent-green-soft rounded-full">
+                <i data-lucide="${iconMap[n.type] || iconMap.default}" class="w-5 h-5 text-light-accent-green dark:text-dark-accent-green"></i>
+            </div>
+            <div class="flex-grow">
+                <p class="text-sm">${n.content}</p>
+                <p class="text-xs text-light-secondary-text dark:text-dark-secondary-text mt-1">${n.created_at}</p>
+            </div>
+            ${!n.is_read ? '<div class="w-2.5 h-2.5 bg-light-accent-blue rounded-full self-center"></div>' : ''}
+        </div>
+    `).join('');
+    lucide.createIcons();
+}
+
+function setupEditProfileForm(providerId) {
+    const form = document.getElementById('profile-edit-form');
+    // Fallback to a new/empty profile or the first provider for demonstration
+    const provider = mockData.providers.find(p => p.provider_id === providerId) || {
+        full_name: '',
+        categoryName: '',
+        price_rate_type: 'Mulai dari',
+        price_amount: '',
+        whatsapp_number: '',
+        bio: '',
+    };
+
+    const categoryOptions = mockData.categories
+        .filter(cat => cat.name !== 'Semua')
+        .map(cat => `<option value="${cat.name}" ${provider.categoryName === cat.name ? 'selected' : ''}>${cat.name}</option>`)
+        .join('');
+    
+    const priceTypeOptions = ['Mulai dari', 'Per Jam', 'Per Proyek']
+        .map(type => `<option value="${type}" ${provider.price_rate_type === type ? 'selected' : ''}>${type}</option>`)
+        .join('');
+
+    form.innerHTML = `
+        <div class="space-y-6 pb-6">
+            <div>
+                <label for="full_name" class="block mb-2 text-sm font-medium text-light-secondary-text dark:text-dark-secondary-text">Nama Lengkap</label>
+                <input type="text" id="full_name" value="${provider.full_name}" class="w-full bg-light-card dark:bg-dark-card py-3 px-4 rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-light-accent-green dark:focus:ring-dark-accent-green">
+            </div>
+
+            <div>
+                <label for="primary_skill" class="block mb-2 text-sm font-medium text-light-secondary-text dark:text-dark-secondary-text">Keahlian Utama</label>
+                <select id="primary_skill" class="w-full bg-light-card dark:bg-dark-card py-3 px-4 rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-light-accent-green dark:focus:ring-dark-accent-green">
+                    <option value="" disabled selected>Pilih kategori</option>
+                    ${categoryOptions}
+                </select>
+            </div>
+            
+            <div class="flex gap-4">
+                <div class="flex-1">
+                    <label for="price_rate_type" class="block mb-2 text-sm font-medium text-light-secondary-text dark:text-dark-secondary-text">Jenis Tarif</label>
+                    <select id="price_rate_type" class="w-full bg-light-card dark:bg-dark-card py-3 px-4 rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-light-accent-green dark:focus:ring-dark-accent-green">
+                        ${priceTypeOptions}
+                    </select>
+                </div>
+                <div class="flex-1">
+                    <label for="price_amount" class="block mb-2 text-sm font-medium text-light-secondary-text dark:text-dark-secondary-text">Harga (Rp)</label>
+                    <input type="number" id="price_amount" value="${provider.price_amount}" class="w-full bg-light-card dark:bg-dark-card py-3 px-4 rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-light-accent-green dark:focus:ring-dark-accent-green">
+                </div>
+            </div>
+
+            <div>
+                <label for="whatsapp_number" class="block mb-2 text-sm font-medium text-light-secondary-text dark:text-dark-secondary-text">Nomor WhatsApp Aktif</label>
+                <input type="tel" id="whatsapp_number" value="${provider.whatsapp_number}" placeholder="Contoh: 6281234567890" class="w-full bg-light-card dark:bg-dark-card py-3 px-4 rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-light-accent-green dark:focus:ring-dark-accent-green">
+            </div>
+
+            <div>
+                <label for="bio" class="block mb-2 text-sm font-medium text-light-secondary-text dark:text-dark-secondary-text">Deskripsi Diri</label>
+                <textarea id="bio" rows="4" class="w-full bg-light-card dark:bg-dark-card py-3 px-4 rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-light-accent-green dark:focus:ring-dark-accent-green" placeholder="Ceritakan tentang keahlian dan pengalaman Anda...">${provider.bio}</textarea>
+            </div>
+            
+            <div>
+                <label for="portfolio" class="block mb-2 text-sm font-medium text-light-secondary-text dark:text-dark-secondary-text">Unggah Portofolio</label>
+                <input type="file" id="portfolio" multiple class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-light-accent-green-soft file:text-light-accent-green dark:file:bg-dark-accent-green-soft dark:file:text-dark-accent-green hover:file:bg-green-100 dark:hover:file:bg-gray-700">
+                <p class="mt-1 text-xs text-light-secondary-text dark:text-dark-secondary-text">Anda bisa memilih lebih dari satu gambar.</p>
+            </div>
+            
+            <div>
+                <button type="submit" class="w-full btn-primary py-3 px-4 rounded-lg transition-transform duration-300 ease-in-out mt-4">Simpan Profil</button>
+            </div>
+        </div>
+    `;
+
+    form.onsubmit = (e) => {
+        e.preventDefault();
+        // In a real app, you would handle form submission to a server here.
+        alert('Profil berhasil disimpan!');
+        goBack(); // Navigate back after "saving"
+    };
+}
+
+
+// ===== CHAT RENDERERS =====
+
+function renderChatList() {
+    const container = document.getElementById('chat-list-content');
+    const userConversations = mockData.conversations
+        .filter(c => c.participant_ids.includes(state.currentUserId))
+        .sort((a, b) => b.last_message_timestamp - a.last_message_timestamp);
+    
+    if (userConversations.length === 0) {
+        container.innerHTML = `<div class="text-center p-8">
+            <i data-lucide="message-square-off" class="mx-auto w-16 h-16 text-light-secondary-text dark:text-dark-secondary-text mb-4"></i>
+            <p class="text-light-secondary-text dark:text-dark-secondary-text">Anda belum memiliki percakapan.</p>
+        </div>`;
+    } else {
+        container.innerHTML = userConversations.map(convo => {
+            const otherParticipantId = convo.participant_ids.find(id => id !== state.currentUserId);
+            const otherParticipant = mockData.providers.find(p => p.provider_id === otherParticipantId);
+            const lastMessage = mockData.messages
+                .filter(m => m.conversation_id === convo.conversation_id)
+                .sort((a, b) => b.timestamp - a.timestamp)[0];
+
+            const lastMessageTime = lastMessage ? lastMessage.timestamp.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '';
+            const lastMessageText = lastMessage ? lastMessage.text : 'Belum ada pesan';
+
+            return `
+                <div class="p-4 flex items-center gap-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50" onclick="navigateTo('chat-detail-screen', { conversationId: ${convo.conversation_id} })">
+                    <img src="${otherParticipant.profile_picture_url}" alt="${otherParticipant.full_name}" class="w-12 h-12 rounded-full object-cover">
+                    <div class="flex-grow overflow-hidden">
+                        <div class="flex justify-between items-center">
+                            <h3 class="font-poppins font-bold truncate">${otherParticipant.full_name}</h3>
+                            <p class="text-xs text-light-secondary-text dark:text-dark-secondary-text flex-shrink-0">${lastMessageTime}</p>
+                        </div>
+                        <p class="text-sm text-light-secondary-text dark:text-dark-secondary-text truncate">${lastMessageText}</p>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+    lucide.createIcons();
+}
+
+function renderChatDetail(conversationId) {
+    const messages = mockData.messages
+        .filter(m => m.conversation_id === conversationId)
+        .sort((a, b) => a.timestamp - b.timestamp);
+    const container = document.getElementById('chat-detail-messages');
+    
+    container.innerHTML = messages.map(msg => {
+        const isSentByUser = msg.sender_id === state.currentUserId;
+        return `
+            <div class="flex ${isSentByUser ? 'justify-end' : 'justify-start'}">
+                <div class="max-w-xs md:max-w-md p-3 rounded-2xl ${isSentByUser ? 'bg-light-accent-green text-white rounded-br-lg' : 'bg-light-card dark:bg-dark-card rounded-bl-lg'}">
+                    <p class="text-sm">${msg.text}</p>
+                    <p class="text-xs opacity-70 mt-1 text-right">${msg.timestamp.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</p>
+                </div>
+            </div>
+        `;
+    }).join('');
+    container.scrollTop = container.scrollHeight;
+}
+
+
+// ===== NAVIGATION & UI LOGIC =====
+function showScreen(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(screenId).classList.add('active');
+    state.currentScreen = screenId;
+}
+
+function updateHeader(screenId, params = {}) {
+    const headerLeft = document.getElementById('header-left');
+    if (screenId === 'home-screen') {
+        headerLeft.innerHTML = `
+            <div>
+                <h1 class="font-poppins font-bold text-xl text-light-text dark:text-dark-text">Selamat Datang, ${state.userName}!</h1>
+                <div id="city-selector-button" class="flex items-center text-sm text-light-secondary-text dark:text-dark-secondary-text -ml-1 cursor-pointer bg-gray-50 dark:bg-gray-700/50 px-2 py-1 rounded-full mt-1 w-max">
+                    <i data-lucide="map-pin" class="w-4 h-4 mr-1.5"></i>
+                    <span id="city-display" class="font-medium">${state.selectedCity}</span>
+                    <i data-lucide="chevron-down" class="w-4 h-4 ml-1"></i>
+                </div>
+            </div>`;
+        
+        document.getElementById('search-bar').placeholder = `Cari layanan di ${state.selectedCity}...`;
+        
+        document.getElementById('city-selector-button').addEventListener('click', () => {
+            openCityModal();
+        });
+    } else if (screenId === 'chat-detail-screen') {
+        const convo = mockData.conversations.find(c => c.conversation_id === params.conversationId);
+        const otherId = convo.participant_ids.find(id => id !== state.currentUserId);
+        const provider = mockData.providers.find(p => p.provider_id === otherId);
+        headerLeft.innerHTML = `<div class="flex items-center gap-2">
+            <i data-lucide="arrow-left" class="cursor-pointer" onclick="goBack()"></i>
+            <img src="${provider.profile_picture_url}" class="w-8 h-8 rounded-full">
+            <h1 class="font-poppins font-bold text-lg truncate">${provider.full_name}</h1>
+        </div>`;
+
+    } else {
+        const titleMap = { 'profile-detail-screen': 'Detail Ahli', 'notification-screen': 'Notifikasi', 'profile-edit-screen': 'Buat/Edit Profil', 'chat-list-screen': 'Pesan' };
+        headerLeft.innerHTML = `<div class="flex items-center gap-2"><i data-lucide="arrow-left" class="cursor-pointer" onclick="goBack()"></i><h1 class="font-poppins font-bold text-xl">${titleMap[screenId] || ''}</h1></div>`;
+    }
+}
+
+function navigateTo(screenId, params = {}, isGoingBack = false) {
+    if (params.userName) {
+        state.userName = params.userName;
+    }
+    if (!isGoingBack && state.currentScreen !== 'splash-screen') {
+        state.navigationHistory.push({ screen: state.currentScreen, params: state.currentParams });
+    }
+    state.currentParams = params;
+
+    const appContentShell = document.getElementById('app-content-shell');
+    const createProfileFab = document.getElementById('create-profile-fab');
+    const screensWithHeader = ['home-screen', 'profile-detail-screen', 'notification-screen', 'profile-edit-screen', 'chat-list-screen', 'chat-detail-screen'];
+    
+    if (screensWithHeader.includes(screenId)) {
+        appContentShell.style.display = 'flex';
+        updateHeader(screenId, params);
+        if (screenId === 'profile-detail-screen') renderProfileDetail(params.providerId);
+        if (screenId === 'notification-screen') renderNotifications();
+        if (screenId === 'profile-edit-screen') setupEditProfileForm(params.providerId);
+        if (screenId === 'chat-list-screen') renderChatList();
+        if (screenId === 'chat-detail-screen') {
+            renderChatDetail(params.conversationId);
+            const sendBtn = document.getElementById('send-chat-button');
+            const chatInput = document.getElementById('chat-input');
+            // Clone and replace to remove old event listeners
+            const newSendBtn = sendBtn.cloneNode(true);
+            sendBtn.parentNode.replaceChild(newSendBtn, sendBtn);
+            newSendBtn.addEventListener('click', () => sendMessage(params.conversationId));
+            chatInput.onkeydown = (e) => { if (e.key === 'Enter') sendMessage(params.conversationId); };
+        }
+    } else {
+        appContentShell.style.display = 'none';
+    }
+
+    // Toggle FAB visibility
+    if (screenId === 'home-screen') {
+        createProfileFab.style.display = 'block';
+    } else {
+        createProfileFab.style.display = 'none';
+    }
+
+    showScreen(screenId);
+    lucide.createIcons();
+}
+
+function goBack() {
+    const lastState = state.navigationHistory.pop();
+    if (lastState) {
+        navigateTo(lastState.screen, lastState.params, true);
+    }
+}
+
+function handleNotificationClick(id) {
+    const notif = mockData.notifications.find(n => n.notification_id === id);
+    if (notif) {
+        notif.is_read = true;
+        if (notif.link_target && notif.link_target !== '#') {
+            const [screen, targetId] = notif.link_target.split(':');
+            if (screen && targetId) {
+                let params = {};
+                if (screen === 'chat-detail-screen') {
+                    const convo = mockData.conversations.find(c => c.conversation_id === parseInt(targetId));
+                    // A bit of a hack for mock data: find the conversation with the right provider
+                    if(convo) {
+                         params = { conversationId: convo.conversation_id };
+                    } else {
+                        // If no direct conversation ID, maybe targetID is a provider ID.
+                        const providerId = parseInt(targetId);
+                        let conversation = mockData.conversations.find(c => c.participant_ids.includes(providerId) && c.participant_ids.includes(state.currentUserId));
+                        if(conversation) {
+                            params = { conversationId: conversation.conversation_id };
+                        } else {
+                             // Fallback or create new
+                            startOrOpenChat(providerId);
+                            return;
+                        }
+                    }
+                } else {
+                    params = { providerId: parseInt(targetId) };
+                }
+                navigateTo(screen, params);
+            }
+        } else {
+            renderNotifications(); // Re-render to show read state
+        }
+    }
+}
+
+// ===== CHAT LOGIC =====
+function startOrOpenChat(providerId) {
+    let conversation = mockData.conversations.find(c =>
+        c.participant_ids.includes(state.currentUserId) && c.participant_ids.includes(providerId)
+    );
+
+    if (!conversation) {
+        // Create a new conversation if it doesn't exist
+        const newConversationId = Math.max(...mockData.conversations.map(c => c.conversation_id)) + 1;
+        conversation = {
+            conversation_id: newConversationId,
+            participant_ids: [state.currentUserId, providerId],
+            last_message_timestamp: new Date()
+        };
+        mockData.conversations.push(conversation);
+    }
+    
+    navigateTo('chat-detail-screen', { conversationId: conversation.conversation_id });
+}
+
+function sendMessage(conversationId) {
+    const chatInput = document.getElementById('chat-input');
+    const text = chatInput.value.trim();
+    if (text === '') return;
+
+    const newMessage = {
+        message_id: Math.random(),
+        conversation_id: conversationId,
+        sender_id: state.currentUserId,
+        text: text,
+        timestamp: new Date()
+    };
+    mockData.messages.push(newMessage);
+    
+    // Update last message timestamp
+    const convo = mockData.conversations.find(c => c.conversation_id === conversationId);
+    if(convo) convo.last_message_timestamp = new Date();
+
+    chatInput.value = '';
+    renderChatDetail(conversationId);
+}
+
+// ===== CITY MODAL LOGIC =====
+function openCityModal() {
+    const modal = document.getElementById('city-modal');
+    const cityListContainer = document.getElementById('city-list-modal');
+    
+    cityListContainer.innerHTML = mockData.cities.map(city => `
+        <div class="city-option p-3 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 flex justify-between items-center" data-city="${city}">
+            <span>${city}</span>
+            ${state.selectedCity === city ? '<i data-lucide="check" class="w-5 h-5 text-light-accent-green dark:text-dark-accent-green"></i>' : ''}
+        </div>
+    `).join('');
+
+    modal.style.display = 'flex';
+    lucide.createIcons();
+
+    document.querySelectorAll('.city-option').forEach(option => {
+        option.addEventListener('click', (e) => {
+            const newCity = e.currentTarget.dataset.city;
+            state.selectedCity = newCity;
+            
+            // Update UI
+            document.getElementById('city-display').textContent = newCity;
+            document.getElementById('search-bar').placeholder = `Cari layanan di ${newCity}...`;
+            // Reset filters when changing city
+            state.activeCategory = null;
+            state.searchTerm = '';
+            document.getElementById('search-bar').value = '';
+            updateCategoryUI();
+            filterAndRenderProviders();
+            
+            closeCityModal();
+        });
+    });
+}
+
+function closeCityModal() {
+    document.getElementById('city-modal').style.display = 'none';
+}
+
+function updateCategoryUI() {
+    document.querySelectorAll('#category-list .category-item').forEach(item => {
+        const itemCategory = item.dataset.category;
+        // Highlight "Semua" if no category is active, or the specific category if it is active
+        if ((itemCategory === 'Semua' && state.activeCategory === null) || itemCategory === state.activeCategory) {
+            item.classList.add('active-category');
+        } else {
+            item.classList.remove('active-category');
+        }
+    });
+}
+
+
+// ===== INITIALIZATION =====
+document.addEventListener('DOMContentLoaded', () => {
+    // A more robust way to handle theme switching
+    const setupTheme = () => {
+        const themeToggleBtn = document.getElementById('theme-toggle-btn');
+        if (!themeToggleBtn) return; // safety check
+        const rootHtml = document.documentElement;
+
+        const applyTheme = (theme) => {
+            if (theme === 'dark') {
+                rootHtml.classList.add('dark');
+                themeToggleBtn.innerHTML = '<i data-lucide="moon"></i>'; // Re-create the icon element
+            } else {
+                rootHtml.classList.remove('dark');
+                themeToggleBtn.innerHTML = '<i data-lucide="sun"></i>'; // Re-create the icon element
+            }
+            lucide.createIcons(); // Re-render the newly created icon
+        };
+
+        const toggleTheme = () => {
+            const newTheme = rootHtml.classList.contains('dark') ? 'light' : 'dark';
+            localStorage.setItem('theme', newTheme);
+            applyTheme(newTheme);
+        };
+
+        // Set initial theme based on localStorage or system preference
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        applyTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
+
+        // Attach event listener to the stable button wrapper
+        themeToggleBtn.addEventListener('click', toggleTheme);
+    };
+    
+    setupTheme();
+
+    document.getElementById('close-modal-btn').addEventListener('click', closeCityModal);
+    document.getElementById('modal-overlay').addEventListener('click', closeCityModal);
+
+    // Search and Filter Listeners
+    document.getElementById('search-bar').addEventListener('input', (e) => {
+        state.searchTerm = e.target.value;
+        filterAndRenderProviders();
+    });
+
+    const categoryList = document.getElementById('category-list');
+    categoryList.addEventListener('click', (e) => {
+        const categoryItem = e.target.closest('.category-item');
+        if (categoryItem) {
+            const categoryName = categoryItem.dataset.category;
+            if (categoryName === 'Semua') {
+                state.activeCategory = null;
+            } else {
+                // Toggle functionality
+                state.activeCategory = state.activeCategory === categoryName ? null : categoryName;
+            }
+            updateCategoryUI();
+            filterAndRenderProviders();
+        }
+    });
+
+    const splashScreen = document.getElementById('splash-screen');
+    const loginScreen = document.getElementById('login-screen');
+
+    // Start fade out animation after a delay
+    setTimeout(() => {
+        splashScreen.classList.remove('animate-splash-fade');
+        splashScreen.classList.add('animate-splash-fade-out');
+    }, 2000);
+
+    // After animation is guaranteed to be finished, switch screens
+    setTimeout(() => {
+        splashScreen.classList.remove('active');
+        loginScreen.classList.add('active');
+        state.currentScreen = 'login-screen';
+        lucide.createIcons();
+    }, 3500); // 2000ms wait + 1500ms animation
+
+    renderCategories();
+    filterAndRenderProviders();
+    updateCategoryUI(); // Ensure "Semua" is active on initial load
+    lucide.createIcons();
+});
+</script>
+</body>
+</html>
+
+
+
+
+
+
