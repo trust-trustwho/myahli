@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MyAhli - Jembatan Keahlian Lokal</title>
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="/myahli/manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -178,12 +178,12 @@
             </div>
         </div>
 
-        <!-- ===== LOGIN & SIGN UP SCREEN ===== -->
+        <!-- ===== LOGIN SCREEN ===== -->
         <div id="login-screen" class="screen flex-col h-full p-8 justify-center items-center text-center">
             <div class="font-poppins text-3xl tracking-wider mb-8 text-light-text dark:text-dark-text">
                  <span class="font-medium">MY</span><span class="font-bold">AHLI</span>
             </div>
-            <h1 class="font-poppins text-2xl font-bold mb-2">Selamat Datang!</h1>
+            <h1 class="font-poppins text-2xl font-bold mb-2">Selamat Datang Kembali!</h1>
             <p class="text-light-secondary-text dark:text-dark-secondary-text mb-8">Login untuk melanjutkan</p>
             
             <button class="w-full bg-white dark:bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-lg flex items-center justify-center border border-gray-300 dark:border-gray-600 mb-4 hover:bg-gray-50 dark:hover:bg-gray-300 transition-colors">
@@ -201,9 +201,25 @@
             <input type="password" placeholder="Password" class="w-full bg-light-card dark:bg-dark-card py-3 px-4 rounded-lg mb-4 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-light-accent-green dark:focus:ring-dark-accent-green transition-shadow">
             
             <button onclick="navigateTo('home-screen', {userName: 'Pengguna'})" class="w-full btn-primary py-3 px-4 rounded-lg mb-4 transition-transform duration-300 ease-in-out">Login</button>
-            <p class="text-sm">Belum punya akun? <a href="#" class="font-bold text-light-accent-green dark:text-dark-accent-green hover:underline">Daftar</a></p>
+            <p class="text-sm">Belum punya akun? <a href="#" onclick="event.preventDefault(); navigateTo('signup-screen')" class="font-bold text-light-accent-green dark:text-dark-accent-green hover:underline">Daftar</a></p>
 
             <button onclick="navigateTo('home-screen', {userName: 'Tamu'})" class="mt-8 text-sm text-light-secondary-text dark:text-dark-secondary-text hover:underline">Lanjut sebagai Tamu</button>
+        </div>
+
+        <!-- ===== SIGN UP SCREEN ===== -->
+        <div id="signup-screen" class="screen flex-col h-full p-8 justify-center items-center text-center">
+            <div class="font-poppins text-3xl tracking-wider mb-8 text-light-text dark:text-dark-text">
+                 <span class="font-medium">MY</span><span class="font-bold">AHLI</span>
+            </div>
+            <h1 class="font-poppins text-2xl font-bold mb-2">Buat Akun Baru</h1>
+            <p class="text-light-secondary-text dark:text-dark-secondary-text mb-8">Satu langkah lagi untuk bergabung</p>
+            
+            <input type="text" placeholder="Nama Lengkap" class="w-full bg-light-card dark:bg-dark-card py-3 px-4 rounded-lg mb-3 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-light-accent-green dark:focus:ring-dark-accent-green transition-shadow">
+            <input type="email" placeholder="Email" class="w-full bg-light-card dark:bg-dark-card py-3 px-4 rounded-lg mb-3 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-light-accent-green dark:focus:ring-dark-accent-green transition-shadow">
+            <input type="password" placeholder="Password" class="w-full bg-light-card dark:bg-dark-card py-3 px-4 rounded-lg mb-4 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-light-accent-green dark:focus:ring-dark-accent-green transition-shadow">
+            
+            <button onclick="navigateTo('home-screen', {userName: 'Pengguna Baru'})" class="w-full btn-primary py-3 px-4 rounded-lg mb-4 transition-transform duration-300 ease-in-out">Daftar</button>
+            <p class="text-sm">Sudah punya akun? <a href="#" onclick="event.preventDefault(); navigateTo('login-screen')" class="font-bold text-light-accent-green dark:text-dark-accent-green hover:underline">Login</a></p>
         </div>
         
         <!-- App Content Shell (Header + Main Content) -->
@@ -317,13 +333,13 @@ const mockData = {
     cities: ['Surabaya', 'Jakarta', 'Bandung', 'Medan', 'Semarang', 'Makassar', 'Yogyakarta'],
     categories: [
         { id: 0, name: 'Semua', icon: 'layout-grid' },
-        { id: 1, name: 'Reparasi AC', icon: 'air-vent' },
+        { id: 7, name: 'Guru Les', icon: 'book-user' },
         { id: 2, name: 'Tukang Ledeng', icon: 'wrench' },
         { id: 3, name: 'Listrik', icon: 'zap' },
+        { id: 1, name: 'Reparasi AC', icon: 'air-vent' },
         { id: 4, name: 'Desain Grafis', icon: 'palette' },
         { id: 5, name: 'Fotografi', icon: 'camera' },
-        { id: 6, name: 'Catering', icon: 'chef-hat' },
-        { id: 7, name: 'Guru Les', icon: 'book-user' }
+        { id: 6, name: 'Catering', icon: 'chef-hat' }
     ], 
     providers: [
         { provider_id: 1, full_name: 'Budi Santoso', profile_picture_url: 'https://placehold.co/100x100/27AE60/FFFFFF?text=BS', primary_skill: 'Spesialis AC', categoryName: 'Reparasi AC', city: 'Surabaya', price_rate_type: 'Per Proyek', price_amount: 150000, whatsapp_number: '6281234567890', bio: 'Pengalaman lebih dari 10 tahun dalam perbaikan dan instalasi AC berbagai merek. Cepat, rapi, dan bergaransi.', portfolio_urls: ['https://placehold.co/400x300/cccccc/333333?text=Portfolio+1', 'https://placehold.co/400x300/cccccc/333333?text=Portfolio+2'], avg_rating: 4.8, distance: '2.5 km', skills: ['Perbaikan AC Bocor', 'Isi Freon', 'Instalasi AC Baru', 'Servis Rutin'], reviews: [{ client_name: 'Andi', client_avatar_url: 'https://placehold.co/50x50/E0E0E0/333?text=A', rating: 5, comment: 'Pengerjaan sangat cepat dan rapi. AC saya langsung dingin lagi. Recommended!' },{ client_name: 'Sari', client_avatar_url: 'https://placehold.co/50x50/E0E0E0/333?text=S', rating: 4, comment: 'Cukup memuaskan, teknisinya ramah.' }] },
@@ -724,7 +740,7 @@ function navigateTo(screenId, params = {}, isGoingBack = false) {
     if (params.userName) {
         state.userName = params.userName;
     }
-    if (!isGoingBack && state.currentScreen !== 'splash-screen') {
+    if (!isGoingBack && state.currentScreen !== 'splash-screen' && state.currentScreen !== 'login-screen') {
         state.navigationHistory.push({ screen: state.currentScreen, params: state.currentParams });
     }
     state.currentParams = params;
@@ -733,44 +749,50 @@ function navigateTo(screenId, params = {}, isGoingBack = false) {
     const createProfileFab = document.getElementById('create-profile-fab');
     const screensWithHeader = ['home-screen', 'profile-detail-screen', 'notification-screen', 'profile-edit-screen', 'chat-list-screen', 'chat-detail-screen'];
     
-    if (screensWithHeader.includes(screenId)) {
+    // Logic for screens without header (login, signup)
+    if (!screensWithHeader.includes(screenId)) {
+        appContentShell.style.display = 'none';
+        createProfileFab.style.display = 'none';
+    } else {
         appContentShell.style.display = 'flex';
         updateHeader(screenId, params);
-        if (screenId === 'profile-detail-screen') renderProfileDetail(params.providerId);
-        if (screenId === 'notification-screen') renderNotifications();
-        if (screenId === 'profile-edit-screen') setupEditProfileForm(params.providerId);
-        if (screenId === 'chat-list-screen') renderChatList();
-        if (screenId === 'chat-detail-screen') {
-            renderChatDetail(params.conversationId);
-            const sendBtn = document.getElementById('send-chat-button');
-            const chatInput = document.getElementById('chat-input');
-            // Clone and replace to remove old event listeners
-            const newSendBtn = sendBtn.cloneNode(true);
-            sendBtn.parentNode.replaceChild(newSendBtn, sendBtn);
-            newSendBtn.addEventListener('click', () => sendMessage(params.conversationId));
-            chatInput.onkeydown = (e) => { if (e.key === 'Enter') sendMessage(params.conversationId); };
+        if (screenId === 'home-screen') {
+            createProfileFab.style.display = 'block';
+        } else {
+            createProfileFab.style.display = 'none';
         }
-    } else {
-        appContentShell.style.display = 'none';
     }
 
-    // Toggle FAB visibility
-    if (screenId === 'home-screen') {
-        createProfileFab.style.display = 'block';
-    } else {
-        createProfileFab.style.display = 'none';
+    // Specific render functions
+    if (screenId === 'profile-detail-screen') renderProfileDetail(params.providerId);
+    if (screenId === 'notification-screen') renderNotifications();
+    if (screenId === 'profile-edit-screen') setupEditProfileForm(params.providerId);
+    if (screenId === 'chat-list-screen') renderChatList();
+    if (screenId === 'chat-detail-screen') {
+        renderChatDetail(params.conversationId);
+        const sendBtn = document.getElementById('send-chat-button');
+        const chatInput = document.getElementById('chat-input');
+        const newSendBtn = sendBtn.cloneNode(true);
+        sendBtn.parentNode.replaceChild(newSendBtn, sendBtn);
+        newSendBtn.addEventListener('click', () => sendMessage(params.conversationId));
+        chatInput.onkeydown = (e) => { if (e.key === 'Enter') sendMessage(params.conversationId); };
     }
 
     showScreen(screenId);
     lucide.createIcons();
 }
 
+
 function goBack() {
     const lastState = state.navigationHistory.pop();
     if (lastState) {
         navigateTo(lastState.screen, lastState.params, true);
+    } else {
+        // Fallback to home if history is empty
+        navigateTo('home-screen', {}, true);
     }
 }
+
 
 function handleNotificationClick(id) {
     const notif = mockData.notifications.find(n => n.notification_id === id);
@@ -782,17 +804,14 @@ function handleNotificationClick(id) {
                 let params = {};
                 if (screen === 'chat-detail-screen') {
                     const convo = mockData.conversations.find(c => c.conversation_id === parseInt(targetId));
-                    // A bit of a hack for mock data: find the conversation with the right provider
                     if(convo) {
                          params = { conversationId: convo.conversation_id };
                     } else {
-                        // If no direct conversation ID, maybe targetID is a provider ID.
                         const providerId = parseInt(targetId);
                         let conversation = mockData.conversations.find(c => c.participant_ids.includes(providerId) && c.participant_ids.includes(state.currentUserId));
                         if(conversation) {
                             params = { conversationId: conversation.conversation_id };
                         } else {
-                             // Fallback or create new
                             startOrOpenChat(providerId);
                             return;
                         }
@@ -988,11 +1007,4 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
 
