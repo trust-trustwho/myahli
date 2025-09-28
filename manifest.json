@@ -2,20 +2,9 @@
   "name": "MyAhli - Jembatan Keahlian Lokal",
   "short_name": "MyAhli",
   "description": "Platform untuk menemukan ahli lokal di sekitarmu.",
-  "start_url": ".",
+  "start_url": "/myahli/",
   "display": "standalone",
   "background_color": "#F7FEF7",
   "theme_color": "#27AE60",
-  "icons": [
-    {
-      "src": "./icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "./icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ]
+  "lang": "id"
 }
